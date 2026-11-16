@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>용마로지스 쿠팡LS등록</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b2a5b">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="쿠팡LS등록">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+  html, body { margin: 0; height: 100%; background: #0b2a5b; font-family: -apple-system, "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; }
+  iframe { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; background: #fff; }
+  #setup { display: none; min-height: 100%; box-sizing: border-box; padding: 48px 24px; color: #fff; }
+  #setup h1 { font-size: 22px; margin: 0 0 8px; }
+  #setup p { font-size: 15px; line-height: 1.5; opacity: .85; margin: 0 0 20px; }
+  #setup input { width: 100%; box-sizing: border-box; padding: 14px; font-size: 16px; border: 0; border-radius: 10px; }
+  #setup button { width: 100%; margin-top: 12px; padding: 14px; font-size: 17px; font-weight: 700; border: 0; border-radius: 10px; background: #ffb400; color: #0b2a5b; }
+  #err { color: #ffd2d2; font-size: 14px; margin-top: 10px; min-height: 20px; }
+</style>
+</head>
+<body>
+<div id="setup">
+  <h1>용마로지스 쿠팡LS등록</h1>
+  <p>담당자에게 받은 접속 링크(또는 접속 코드)를 한 번만 붙여넣어 주세요. 다음부터는 바로 열립니다.</p>
+  <input id="link" type="text" inputmode="url" placeholder="접속 링크 또는 코드 붙여넣기" autocomplete="off">
+  <button id="go">시작하기</button>
+  <div id="err"></div>
+</div>
+<iframe id="app" hidden allow="geolocation; camera; clipboard-write"></iframe>
+
+<script>
+// ▼ 앱스크립트 웹앱 주소 (새로 배포해서 주소가 바뀌면 여기만 수정)
+var BASE = 'https://script.google.com/macros/s/AKfycbxT5ngZRZh8YWWay1WQVJPk3wNo3daRrWiyTUL_UPuh2ZC5A24U1r72PtLcy7elplS9GA/exec';
+var KEY = 'ls_query';
+
+function load(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
+function save(key, v) { try { localStorage.setItem(key, v); } catch (e) {} }
+function clear(key) { try { localStorage.removeItem(key); } catch (e) {} }
+
+function open(query) {
+  document.getElementById('setup').style.display = 'none';
+  var f = document.getElementById('app');
+  f.src = BASE + '?' + query;
+  f.hidden = false;
+}
+
+// 붙여넣은 값이 전체 링크든 토큰만이든 쿼리 문자열로 정리
+function toQuery(text) {
+  text = (text || '').trim();
+  if (!text) return '';
+  var q = text.indexOf('?') >= 0 ? text.slice(text.indexOf('?') + 1) : text;
+  if (q.indexOf('token=') < 0) q = 'm=1&token=' + encodeURIComponent(q);
+  return q;
+}
+
+(function start() {
+  var params = new URLSearchParams(location.search);
+  if (params.has('reset')) { clear(KEY); history.replaceState(null, '', location.pathname); }
+
+  // 1) 링크에 토큰이 붙어 들어오면 저장하고 주소창에서는 지움
+  if (params.has('token')) {
+    save(KEY, location.search.slice(1));
+    history.replaceState(null, '', location.pathname);
+  }
+  // 2) 저장된 값이 있으면 바로 실행
+  var saved = load(KEY);
+  if (saved) return open(saved);
+
+  // 3) 없으면 한 번 입력받기
+  document.getElementById('setup').style.display = 'block';
+  document.getElementById('go').onclick = function () {
+    var q = toQuery(document.getElementById('link').value);
+    if (!q) { document.getElementById('err').textContent = '링크 또는 코드를 입력해 주세요.'; return; }
+    save(KEY, q);
+    open(q);
+  };
+})();
+
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function () {});
+</script>
+</body>
+</html>
