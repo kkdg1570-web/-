@@ -1,6 +1,6 @@
 {
-  "name": "용마로지스 쿠팡LS등록",
-  "short_name": "쿠팡LS등록",
+  "name": "용마쿠팡파트너",
+  "short_name": "용마쿠팡파트너",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
