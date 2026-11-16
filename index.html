@@ -30,7 +30,6 @@
   <button id="go">시작하기</button>
   <div id="err"></div>
 </div>
-<iframe id="app" hidden allow="geolocation; camera; clipboard-write"></iframe>
 
 <script>
 // ▼ 앱스크립트 웹앱 주소 (새로 배포해서 주소가 바뀌면 여기만 수정)
@@ -42,10 +41,8 @@ function save(key, v) { try { localStorage.setItem(key, v); } catch (e) {} }
 function clear(key) { try { localStorage.removeItem(key); } catch (e) {} }
 
 function open(query) {
-  document.getElementById('setup').style.display = 'none';
-  var f = document.getElementById('app');
-  f.src = BASE + '?' + query;
-  f.hidden = false;
+  // 배차 화면으로 바로 이동 (끼워 넣기 방식은 구글 계정/보안 설정에 막힘)
+  location.replace(BASE + '?' + query);
 }
 
 // 붙여넣은 값이 전체 링크든 토큰만이든 쿼리 문자열로 정리
