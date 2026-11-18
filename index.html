@@ -162,7 +162,7 @@ function openInFrame(query) {
   var f = document.createElement('iframe');
   f.id = 'frame';
   f.setAttribute('credentialless', '');
-  f.setAttribute('allow', 'clipboard-write');
+  f.setAttribute('allow', 'clipboard-read; clipboard-write');
   f.setAttribute('title', 'LS 배차');
   var done = false;
   function reveal() {
