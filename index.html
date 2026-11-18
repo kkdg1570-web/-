@@ -119,6 +119,20 @@
 var BASE = 'https://script.google.com/macros/s/AKfycbxT5ngZRZh8YWWay1WQVJPk3wNo3daRrWiyTUL_UPuh2ZC5A24U1r72PtLcy7elplS9GA/exec';
 var KEY = 'ls_query';
 var MODE_KEY = 'ls_mode';
+// 앱 화면 설정(화면 모드·글자 크기): 배차 화면이 알려 주면 여기서 기억했다가 다음에 열 때 주소에 붙여 보냄
+var PREF_KEY = 'ls_pref';
+function prefQuery() {
+  try {
+    var p = JSON.parse(localStorage.getItem(PREF_KEY) || '{}'), q = '';
+    if (/^(auto|light|dark)$/.test(p.theme || '')) q += '&theme=' + p.theme;
+    if (p.fs === 'l' || p.fs === 'n') q += '&fs=' + p.fs;
+    return q;
+  } catch (e) { return ''; }
+}
+window.addEventListener('message', function (e) {
+  var d = e.data;
+  if (d && d.type === 'lsapp-pref') { try { localStorage.setItem(PREF_KEY, JSON.stringify({ theme: d.theme, fs: d.fs })); } catch (er) {} }
+});
 var CHECK_TIMEOUT_MS = 5000;
 var SPLASH_MIN_MS = 1200;      // 시작 화면 최소 노출 시간
 var FRAME_MAX_WAIT_MS = 15000; // 배차 화면이 늦게 떠도 이 시간 뒤엔 시작 화면을 걷음
@@ -154,7 +168,7 @@ var canFrame = typeof HTMLIFrameElement !== 'undefined' && 'credentialless' in H
 function goDirect(query) {
   document.getElementById('splash').classList.remove('hide');
   var wait = Math.max(0, SPLASH_MIN_MS - (Date.now() - startedAt));
-  setTimeout(function () { location.replace(BASE + '?' + query); }, wait);
+  setTimeout(function () { location.replace(BASE + '?' + query + prefQuery()); }, wait);
 }
 
 // 설치된 앱 안에서 주소창 없이 배차 화면 열기
@@ -174,7 +188,7 @@ function openInFrame(query) {
   }
   f.addEventListener('load', reveal);
   setTimeout(reveal, FRAME_MAX_WAIT_MS);
-  f.src = BASE + '?' + query;
+  f.src = BASE + '?' + query + prefQuery();
   document.getElementById('frameHost').appendChild(f);
 }
 
