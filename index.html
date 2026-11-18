@@ -4,58 +4,112 @@
 <meta charset="utf-8">
 <title>용마쿠팡파트너</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0b2a5b">
+<meta name="theme-color" content="#ffffff" id="themeColor">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preload" as="image" href="splash-logo.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="용마쿠팡파트너">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
-  html, body { margin: 0; height: 100%; background: #0b2a5b; font-family: -apple-system, "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; }
-  .screen { display: none; min-height: 100%; box-sizing: border-box; padding: 48px 24px; color: #fff; }
-  .screen h1 { font-size: 22px; margin: 0 0 8px; }
-  .screen p { font-size: 15px; line-height: 1.6; opacity: .88; margin: 0 0 20px; }
-  .screen input { width: 100%; box-sizing: border-box; padding: 14px; font-size: 16px; border: 0; border-radius: 10px; }
-  .btn { display: block; width: 100%; margin-top: 12px; padding: 15px; font-size: 17px; font-weight: 700; border: 0; border-radius: 10px; background: #ffb400; color: #0b2a5b; }
-  .btn.sub { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.5); font-weight: 500; }
-  .btn:disabled { opacity: .6; }
-  .notice { display: none; background: #ffe3e3; color: #8a1c1c; border-radius: 10px; padding: 12px 14px; font-size: 15px; line-height: 1.5; margin-bottom: 16px; }
-  #err { color: #ffd2d2; font-size: 14px; margin-top: 10px; min-height: 20px; }
-  #howto { display: none; background: rgba(255,255,255,.1); border-radius: 10px; padding: 14px 16px; font-size: 15px; line-height: 1.7; margin-top: 14px; }
-  #checking { text-align: center; padding-top: 40vh; font-size: 16px; opacity: .85; }
+  /* ── 색: 흰 바탕 + 로고의 두 회사 색 + 로고 아래 무지개 띠 ── */
+  :root {
+    --paper: #ffffff;
+    --navy: #1e2b47;      /* 용마로지스 글자색, 배차 화면 상단색 */
+    --maroon: #6b1414;    /* 쿠팡 'cou' 색 */
+    --ink: #1f2430;
+    --muted: #6a7282;
+    --line: #e3e6ec;
+    --danger: #b3261e;
+    --band: linear-gradient(90deg, #39aae4 0%, #8fba8d 50%, #fdd42a 100%);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--paper); color: var(--ink);
+    font-family: "Pretendard Variable", Pretendard, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    -webkit-font-smoothing: antialiased; }
+  .screen { display: none; min-height: 100%; padding: max(40px, env(safe-area-inset-top)) 24px 32px; }
+  .wrap { max-width: 420px; margin: 0 auto; }
+
+  /* ── 시작 화면 ── */
+  #splash { display: flex; flex-direction: column; align-items: center; justify-content: center;
+    position: fixed; inset: 0; padding: 24px; background: var(--paper); z-index: 10;
+    transition: opacity .35s ease; }
+  #splash.hide { opacity: 0; pointer-events: none; }
+  #splash img { width: min(68vw, 300px); height: auto; display: block; }
+  .band { width: min(68vw, 300px); height: 6px; border-radius: 3px; margin-top: 36px;
+    background: #eef0f3; overflow: hidden; position: relative; }
+  .band::after { content: ""; position: absolute; inset: 0; background: var(--band); border-radius: 3px;
+    transform-origin: left; transform: scaleX(0); animation: fill 1.6s cubic-bezier(.4,0,.2,1) infinite; }
+  @keyframes fill { 0% { transform: scaleX(0); opacity: 1; } 75% { transform: scaleX(1); opacity: 1; } 100% { transform: scaleX(1); opacity: 0; } }
+  #splashMsg { margin-top: 14px; font-size: 14px; color: var(--muted); letter-spacing: -0.01em; min-height: 20px; }
+  @media (prefers-reduced-motion: reduce) { .band::after { animation: none; transform: scaleX(1); } }
+
+  /* ── 입력·설치 화면 ── */
+  .brand { display: block; width: 168px; height: auto; margin: 8px 0 6px; }
+  .brandBand { width: 168px; height: 4px; border-radius: 2px; background: var(--band); margin-bottom: 36px; }
+  h1 { font-size: 26px; line-height: 1.3; font-weight: 700; letter-spacing: -0.03em; margin: 0 0 10px; color: var(--navy); }
+  p.lead { font-size: 16px; line-height: 1.6; color: var(--muted); margin: 0 0 28px; letter-spacing: -0.01em; }
+  label { display: block; font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 8px; }
+  input { width: 100%; padding: 15px 16px; font: inherit; font-size: 16px; color: var(--ink);
+    border: 1.5px solid var(--line); border-radius: 12px; background: #fafbfc; outline: none; }
+  input:focus { border-color: var(--navy); background: #fff; }
+  .btn { display: block; width: 100%; margin-top: 14px; padding: 16px; font: inherit; font-size: 17px; font-weight: 700;
+    border: 0; border-radius: 12px; background: var(--navy); color: #fff; letter-spacing: -0.01em; }
+  .btn:active { transform: translateY(1px); }
+  .btn:disabled { opacity: .55; }
+  .btn.ghost { background: transparent; color: var(--navy); border: 1.5px solid var(--line); font-weight: 600; }
+  .btn:focus-visible, input:focus-visible { outline: 3px solid #39aae4; outline-offset: 2px; }
+  .notice { display: none; border-left: 4px solid var(--danger); background: #fdf1f0; color: #7a1d17;
+    border-radius: 0 10px 10px 0; padding: 12px 14px; font-size: 15px; line-height: 1.5; margin-bottom: 24px; }
+  #err { color: var(--danger); font-size: 14px; line-height: 1.5; margin-top: 12px; min-height: 21px; }
+  #howto { display: none; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line);
+    font-size: 15px; line-height: 1.75; color: var(--ink); }
+  #howto dt { font-weight: 700; color: var(--navy); margin-top: 10px; }
+  #howto dd { margin: 0; color: var(--muted); }
+
+  /* ── 배차 화면 ── */
   #frame { display: none; position: fixed; inset: 0; width: 100%; height: 100%; border: 0; background: #fff; }
 </style>
 </head>
 <body>
 
-<!-- 접속 확인 중 -->
-<div id="checking" class="screen">접속 확인 중…</div>
-
-<!-- 접속 링크를 입력받는 화면 -->
-<div id="setup" class="screen">
-  <h1>용마쿠팡파트너</h1>
-  <div id="badToken" class="notice">저장된 접속 정보가 올바르지 않습니다.<br>담당자에게 받은 접속 링크를 다시 붙여넣어 주세요.</div>
-  <p>담당자에게 받은 접속 링크(또는 접속 코드)를 한 번만 붙여넣어 주세요. 다음부터는 바로 열립니다.</p>
-  <input id="link" type="text" inputmode="url" placeholder="접속 링크 또는 코드 붙여넣기" autocomplete="off">
-  <button id="go" class="btn">시작하기</button>
-  <div id="err"></div>
+<!-- 시작 화면 -->
+<div id="splash" role="status" aria-live="polite">
+  <img src="splash-logo.png" alt="용마로지스 × 쿠팡">
+  <div class="band" aria-hidden="true"></div>
+  <div id="splashMsg">배차 화면을 여는 중</div>
 </div>
 
-<!-- 브라우저로 들어왔을 때: 앱 설치 안내 화면 -->
-<div id="install" class="screen">
-  <h1>용마쿠팡파트너</h1>
-  <p>앱으로 설치하면 홈 화면 아이콘으로 바로 배차 화면이 열립니다.</p>
+<!-- 접속 링크 입력 화면 -->
+<div id="setup" class="screen"><div class="wrap">
+  <img class="brand" src="splash-logo.png" alt="용마로지스 × 쿠팡">
+  <div class="brandBand" aria-hidden="true"></div>
+  <div id="badToken" class="notice">저장된 접속 정보가 맞지 않습니다. 담당자에게 받은 접속 링크를 다시 붙여넣어 주세요.</div>
+  <h1>접속 링크를 넣어 주세요</h1>
+  <p class="lead">담당자에게 받은 링크를 한 번만 넣으면, 다음부터는 아이콘만 눌러도 배차 화면이 열립니다.</p>
+  <label for="link">접속 링크 또는 코드</label>
+  <input id="link" type="text" inputmode="url" placeholder="https://… 붙여넣기" autocomplete="off" autocapitalize="off" spellcheck="false">
+  <button id="go" class="btn">배차 화면 열기</button>
+  <div id="err" role="alert"></div>
+</div></div>
+
+<!-- 브라우저로 들어왔을 때: 설치 안내 -->
+<div id="install" class="screen"><div class="wrap">
+  <img class="brand" src="splash-logo.png" alt="용마로지스 × 쿠팡">
+  <div class="brandBand" aria-hidden="true"></div>
+  <h1>홈 화면에 앱을 설치하세요</h1>
+  <p class="lead">설치하면 아이콘 한 번으로 쿠팡 LS 배차 등록 화면이 열립니다.</p>
   <button id="installBtn" class="btn">앱 설치</button>
-  <button id="openBtn" class="btn sub">설치 없이 바로 열기</button>
-  <div id="howto">
-    <b>설치 방법</b><br>
-    · 안드로이드(크롬): 오른쪽 위 ⋮ → "앱 설치" 또는 "홈 화면에 추가"<br>
-    · 삼성 인터넷: 아래 ≡ → "현재 페이지 추가" → "홈 화면"<br>
-    · 아이폰(사파리): 아래 공유 버튼 → "홈 화면에 추가"<br>
-    · 카카오톡에서 열었다면: 오른쪽 아래 ⋮ → "다른 브라우저로 열기" 후 진행
-  </div>
-</div>
+  <button id="openBtn" class="btn ghost">설치 없이 열기</button>
+  <dl id="howto">
+    <dt>안드로이드 크롬</dt><dd>오른쪽 위 ⋮ → "앱 설치" 또는 "홈 화면에 추가"</dd>
+    <dt>삼성 인터넷</dt><dd>아래 ≡ → "현재 페이지 추가" → "홈 화면"</dd>
+    <dt>아이폰 사파리</dt><dd>아래 공유 버튼 → "홈 화면에 추가"</dd>
+    <dt>카카오톡에서 열었다면</dt><dd>오른쪽 아래 ⋮ → "다른 브라우저로 열기" 후 다시 진행</dd>
+  </dl>
+</div></div>
 
 <div id="frameHost"></div>
 
@@ -63,26 +117,44 @@
 // ▼ 앱스크립트 웹앱 주소 (새로 배포해서 주소가 바뀌면 여기만 수정)
 var BASE = 'https://script.google.com/macros/s/AKfycbxT5ngZRZh8YWWay1WQVJPk3wNo3daRrWiyTUL_UPuh2ZC5A24U1r72PtLcy7elplS9GA/exec';
 var KEY = 'ls_query';
+var MODE_KEY = 'ls_mode';
 var CHECK_TIMEOUT_MS = 5000;
+var SPLASH_MIN_MS = 1200;      // 시작 화면 최소 노출 시간
+var FRAME_MAX_WAIT_MS = 15000; // 배차 화면이 늦게 떠도 이 시간 뒤엔 시작 화면을 걷음
+var NAVY = '#1e2b47';
+var startedAt = Date.now();
 
 function load(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
 function save(key, v) { try { localStorage.setItem(key, v); } catch (e) {} }
 function clear(key) { try { localStorage.removeItem(key); } catch (e) {} }
+function setTheme(c) { document.getElementById('themeColor').setAttribute('content', c); }
+
+// 시작 화면 걷기 (최소 노출 시간 보장)
+function hideSplash(cb) {
+  var wait = Math.max(0, SPLASH_MIN_MS - (Date.now() - startedAt));
+  setTimeout(function () {
+    document.getElementById('splash').classList.add('hide');
+    if (cb) cb();
+  }, wait);
+}
 function show(id) {
-  ['checking', 'setup', 'install'].forEach(function (s) {
+  ['setup', 'install'].forEach(function (s) {
     document.getElementById(s).style.display = s === id ? 'block' : 'none';
   });
+  hideSplash();
 }
 
 // 설치된 앱으로 실행 중인지
 var isApp = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
-
-// 화면 방식 설정: 기본은 주소창 없는 화면(frame). ?direct 로 열면 예전 방식(바로 이동)으로 고정, ?frame 으로 되돌림
-var MODE_KEY = 'ls_mode';
+// 주소창 없는 화면(iframe) 지원 여부
 var canFrame = typeof HTMLIFrameElement !== 'undefined' && 'credentialless' in HTMLIFrameElement.prototype;
 
-// 배차 화면으로 이동
-function goDirect(query) { location.replace(BASE + '?' + query); }
+// 배차 화면으로 이동 (예전 방식)
+function goDirect(query) {
+  document.getElementById('splash').classList.remove('hide');
+  var wait = Math.max(0, SPLASH_MIN_MS - (Date.now() - startedAt));
+  setTimeout(function () { location.replace(BASE + '?' + query); }, wait);
+}
 
 // 설치된 앱 안에서 주소창 없이 배차 화면 열기
 // credentialless: 구글 로그인 정보를 보내지 않고 열어서 계정 충돌("액세스 권한 필요")을 피함
@@ -91,10 +163,18 @@ function openInFrame(query) {
   f.id = 'frame';
   f.setAttribute('credentialless', '');
   f.setAttribute('allow', 'clipboard-write');
+  f.setAttribute('title', 'LS 배차');
+  var done = false;
+  function reveal() {
+    if (done) return; done = true;
+    f.style.display = 'block';
+    setTheme(NAVY);
+    hideSplash();
+  }
+  f.addEventListener('load', reveal);
+  setTimeout(reveal, FRAME_MAX_WAIT_MS);
   f.src = BASE + '?' + query;
   document.getElementById('frameHost').appendChild(f);
-  show(null);
-  f.style.display = 'block';
 }
 
 function openApp(query) {
@@ -139,7 +219,7 @@ function askAgain() {
 var installEvent = null;
 window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); installEvent = e; });
 window.addEventListener('appinstalled', function () {
-  document.getElementById('installBtn').textContent = '설치 완료 — 홈 화면의 아이콘을 눌러주세요';
+  document.getElementById('installBtn').textContent = '설치했습니다. 홈 화면의 아이콘을 눌러 주세요';
 });
 
 function next(query) {
@@ -158,16 +238,18 @@ function showSetup() {
   var err = document.getElementById('err');
   btn.onclick = function () {
     var q = toQuery(document.getElementById('link').value);
-    if (!q) { err.textContent = '링크 또는 코드를 입력해 주세요.'; return; }
-    btn.disabled = true; btn.textContent = '확인 중…'; err.textContent = '';
+    if (!q) { err.textContent = '링크를 붙여넣어 주세요.'; return; }
+    btn.disabled = true; btn.textContent = '확인하는 중…'; err.textContent = '';
     checkToken(q).then(function (res) {
-      btn.disabled = false; btn.textContent = '시작하기';
+      btn.disabled = false; btn.textContent = '배차 화면 열기';
       if (res === 'bad') {
-        err.textContent = '접속 링크가 올바르지 않습니다. 끝부분까지 잘리지 않았는지 확인해 주세요.';
+        err.textContent = '접속 링크가 맞지 않습니다. 끝부분까지 잘리지 않았는지 확인해 주세요.';
         return;
       }
       save(KEY, q);
       document.getElementById('badToken').style.display = 'none';
+      document.getElementById('setup').style.display = 'none';
+      document.getElementById('splash').classList.remove('hide');
       next(q);
     });
   };
@@ -189,7 +271,6 @@ function showSetup() {
   if (!saved) return showSetup();
 
   // 저장된 토큰을 먼저 확인하고, 틀렸으면 다시 입력받기
-  show('checking');
   checkToken(saved).then(function (res) {
     if (res === 'bad') return askAgain();
     next(saved);
