@@ -37,15 +37,97 @@
   #splash { display: flex; flex-direction: column; align-items: center; justify-content: center;
     position: fixed; inset: 0; padding: 24px; background: var(--paper); z-index: 10;
     transition: opacity .35s ease; }
-  #splash.hide { opacity: 0; pointer-events: none; }
-  #splash img { width: min(68vw, 300px); height: auto; display: block; }
-  .band { width: min(68vw, 300px); height: 6px; border-radius: 3px; margin-top: 36px;
+  #splash.hide { opacity: 0; pointer-events: none; transform: scale(1.06); transition: opacity .35s ease, transform .35s ease; }
+  #splash svg { width: min(78vw, 340px); height: auto; display: block; overflow: visible; }
+  .band { width: min(68vw, 300px); height: 6px; border-radius: 3px; margin-top: 30px;
     background: #eef0f3; overflow: hidden; position: relative; }
   .band::after { content: ""; position: absolute; inset: 0; background: var(--band); border-radius: 3px;
-    transform-origin: left; transform: scaleX(0); animation: fill 1.6s cubic-bezier(.4,0,.2,1) infinite; }
+    transform-origin: left; transform: scaleX(0); }
+  #splash.play .band::after { animation: fill1 2.9s cubic-bezier(.3,.1,.3,1) forwards, fill 1.6s 3s cubic-bezier(.4,0,.2,1) infinite; }
+  @keyframes fill1 { from { transform: scaleX(0); } to { transform: scaleX(1); } }
   @keyframes fill { 0% { transform: scaleX(0); opacity: 1; } 75% { transform: scaleX(1); opacity: 1; } 100% { transform: scaleX(1); opacity: 0; } }
   #splashMsg { margin-top: 14px; font-size: 14px; color: var(--muted); letter-spacing: -0.01em; min-height: 20px; }
-  @media (prefers-reduced-motion: reduce) { .band::after { animation: none; transform: scaleX(1); } }
+
+  /* ── 시작 로고 애니메이션: 나비가 날개를 접었다 펴며 내려와 앉고 → 로켓이 화살표를 그리며 그대로 날아감 ── */
+  #splash .lg { opacity: 0; }
+  #splash.play .lg, #splash.still .lg { opacity: 1; }
+  #splash .flight, #splash .flap, #splash .wl, #splash .wr, #splash .head, #splash .rocket,
+  #splash .spark, #splash .shadow, #splash .puff { transform-box: view-box; }
+  #splash .flap { transform-origin: 282px 212px; }
+  #splash .wl { transform-origin: 268px 210px; }
+  #splash .wr { transform-origin: 292px 214px; }
+  #splash .head { transform-origin: 445px 140px; }
+  #splash .shadow { transform-origin: 285px 352px; opacity: 0; }
+  #splash .spark { transform-origin: 445px 140px; opacity: 0; }
+  #splash .puff { transform-origin: 470px 118px; opacity: 0; }
+  #splash .rocket { transform-origin: 0 0; opacity: 0; }
+  #splash .trail { transform-box: fill-box; transform-origin: 50% 0; }
+  #splash .reveal { stroke-dashoffset: 1; }
+  #splash .revealCap { opacity: 0; }
+  #splash.play .flight { animation: sFlight 1.15s cubic-bezier(.25,.7,.35,1) both; }
+  #splash.play .flap   { animation: sLand .45s 1.12s ease-out both; }
+  #splash.play .wl     { animation: sFlapL 1.35s ease-in-out both; }
+  #splash.play .wr     { animation: sFlapR 1.35s ease-in-out both; }
+  #splash.play .shadow { animation: sShadow 1.5s ease-out both; }
+  #splash.play .reveal { animation: sReveal .6s 1.2s linear both; }
+  #splash.play .revealCap { animation: sFade .12s 1.78s linear both; }
+  #splash.play .head   { animation: sPulse .35s 1.78s ease-out both; }
+  #splash.play .rocket { animation: sLaunch 1.2s 1.2s linear both; }
+  #splash.play .trail  { animation: sTrail 1.2s 1.2s ease-in both; }
+  #splash.play .puff   { animation: sPuff .8s 1.78s ease-out both; }
+  #splash.play .spark  { animation: sSpark .6s 1.78s ease-out both; }
+  #splash.play .topText { animation: sWipe .5s 1.35s cubic-bezier(.3,.7,.3,1) both; }
+  #splash.play .botText { animation: sRise .5s 2.15s cubic-bezier(.3,.8,.3,1.2) both; }
+  #splash.play #splashMsg { animation: sFade .4s .3s both; }
+  #splash.still .reveal { stroke-dashoffset: 0; }
+  #splash.still .revealCap { opacity: 1; }
+  @keyframes sFlight {
+    0%   { transform: translate(-250px, -430px) rotate(-16deg) scale(.45); opacity: 0; }
+    10%  { opacity: 1; }
+    30%  { transform: translate(-110px, -270px) rotate(12deg) scale(.6); }
+    52%  { transform: translate(-175px, -135px) rotate(-10deg) scale(.76); }
+    74%  { transform: translate(-35px, -55px) rotate(8deg) scale(.9); }
+    90%  { transform: translate(8px, -12px) rotate(-2deg) scale(1); }
+    100% { transform: none; opacity: 1; }
+  }
+  @keyframes sFlapL {
+    0%,18%,36%,54%,72%,100% { transform: scaleX(1) skewY(0); }
+    9%,27%,45%,63% { transform: scaleX(.12) skewY(-8deg); }
+    80% { transform: scaleX(.3) skewY(-5deg); }
+    88% { transform: scaleX(1.04); }
+  }
+  @keyframes sFlapR {
+    0%,18%,36%,54%,72%,100% { transform: scaleX(1) skewY(0); }
+    9%,27%,45%,63% { transform: scaleX(.12) skewY(8deg); }
+    80% { transform: scaleX(.3) skewY(5deg); }
+    88% { transform: scaleX(1.04); }
+  }
+  @keyframes sLand { 0% { transform: none; } 35% { transform: scale(1.06, .9); } 70% { transform: scale(.98, 1.03); } 100% { transform: none; } }
+  @keyframes sShadow { 0%, 70% { opacity: 0; transform: scaleX(.4); } 100% { opacity: .18; transform: scaleX(1); } }
+  @keyframes sReveal { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  @keyframes sFade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes sPulse { 0% { transform: none; } 40% { transform: scale(1.12); filter: brightness(1.2); } 100% { transform: none; } }
+  @keyframes sLaunch {
+    0%   { transform: translate(248px, 250px) rotate(118deg) scale(.7); opacity: 0; }
+    4%   { opacity: 1; }
+    7%   { transform: translate(290px, 264px) rotate(88deg) scale(.8); }
+    16%  { transform: translate(340px, 240px) rotate(55deg) scale(.85); }
+    28%  { transform: translate(395px, 193px) rotate(48deg) scale(.9); }
+    40%  { transform: translate(448px, 146px) rotate(45deg) scale(.95); }
+    50%  { transform: translate(488px, 100px) rotate(42deg) scale(1); }
+    70%  { transform: translate(560px, 15px) rotate(38deg) scale(.95); opacity: 1; }
+    100% { transform: translate(720px, -210px) rotate(34deg) scale(.75); opacity: 0; }
+  }
+  @keyframes sTrail { 0% { transform: scaleY(.25); } 50% { transform: scaleY(.6); } 100% { transform: scaleY(1.4); } }
+  @keyframes sPuff { 0% { opacity: 0; transform: scale(.3); } 25% { opacity: .9; } 100% { opacity: 0; transform: scale(1.8) translate(-8px, 8px); } }
+  @keyframes sSpark { 0% { opacity: 0; transform: scale(.2); } 30% { opacity: 1; } 100% { opacity: 0; transform: scale(1.4); } }
+  @keyframes sWipe { from { clip-path: inset(0 100% 0 0); transform: translateY(-14px); } to { clip-path: inset(0 0 0 0); transform: none; } }
+  @keyframes sRise { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    #splash.play * { animation: none !important; }
+    #splash.play .reveal { stroke-dashoffset: 0; } #splash.play .revealCap { opacity: 1; }
+    #splash.play .band::after { animation: none; transform: scaleX(1); }
+  }
 
   /* ── 입력·설치 화면 ── */
   .brand { display: block; width: 168px; height: auto; margin: 8px 0 6px; }
@@ -78,7 +160,56 @@
 
 <!-- 시작 화면 -->
 <div id="splash" role="status" aria-live="polite">
-  <img src="splash-logo.png" alt="용마로지스 × 쿠팡">
+  <svg class="lg" viewBox="0 0 648 460" role="img" aria-label="용마로지스 × 쿠팡">
+    <defs>
+      <image id="logo" href="splash-logo.png" x="0" y="0" width="648" height="460"/>
+      <clipPath id="cTop"><rect x="100" y="8" width="440" height="96"/></clipPath>
+      <clipPath id="cBot"><rect x="10" y="352" width="630" height="96"/></clipPath>
+      <clipPath id="cMark"><rect x="140" y="104" width="292" height="240"/></clipPath>
+      <clipPath id="cWL"><polygon points="140,104 298,104 298,170 246,196 242,262 140,262"/></clipPath>
+      <clipPath id="cWR"><polygon points="300,104 432,104 432,344 262,344 262,250 250,235 300,168"/></clipPath>
+      <clipPath id="cBody"><polygon points="237,203 299,165 321,230 256,252"/></clipPath>
+      <clipPath id="cArrow"><polygon points="248,238 252,256 262,268 285,272 310,266 340,254 372,236 402,213 428,192 446,180 463,199 488,95 382,120 408,140 393,152 368,172 343,192 318,210 298,224 280,234 266,240"/></clipPath>
+      <mask id="mNoArrow" maskUnits="userSpaceOnUse" x="0" y="0" width="648" height="460">
+        <rect width="648" height="460" fill="#fff"/>
+        <polygon fill="#000" points="248,238 252,256 262,268 285,272 310,266 340,254 372,236 402,213 428,192 446,180 463,199 488,95 382,120 408,140 393,152 368,172 343,192 318,210 298,224 280,234 266,240"/>
+      </mask>
+      <mask id="mReveal" maskUnits="userSpaceOnUse" x="0" y="0" width="648" height="460">
+        <path class="reveal" d="M244,246 Q290,280 340,240 T448,146 L492,96" stroke="#fff" stroke-width="64" fill="none" stroke-linecap="round" pathLength="1" stroke-dasharray="1 1"/>
+        <rect class="revealCap" x="0" y="0" width="648" height="460" fill="#fff"/>
+      </mask>
+      <linearGradient id="gTrail" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#f6d31c"/>
+        <stop offset=".45" stop-color="#f39a1e" stop-opacity=".85"/>
+        <stop offset="1" stop-color="#e8352e" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <g class="topText"><use href="#logo" clip-path="url(#cTop)"/></g>
+    <ellipse class="shadow" cx="285" cy="352" rx="70" ry="6" fill="#1d2433"/>
+    <g class="flight"><g class="flap"><g clip-path="url(#cMark)">
+      <g class="wr"><use href="#logo" mask="url(#mNoArrow)" clip-path="url(#cWR)"/></g>
+      <g class="wl"><use href="#logo" mask="url(#mNoArrow)" clip-path="url(#cWL)"/></g>
+      <use href="#logo" mask="url(#mNoArrow)" clip-path="url(#cBody)"/>
+    </g></g></g>
+    <g class="head"><g mask="url(#mReveal)"><use href="#logo" clip-path="url(#cArrow)"/></g></g>
+    <g class="puff" fill="#c9ced8"><circle cx="470" cy="118" r="9"/><circle cx="458" cy="108" r="7"/><circle cx="482" cy="130" r="6"/></g>
+    <g class="spark">
+      <circle cx="445" cy="140" r="34" fill="none" stroke="#f6c21b" stroke-width="3"/>
+      <g stroke="#f39a1e" stroke-width="4" stroke-linecap="round">
+        <line x1="445" y1="92" x2="445" y2="80"/><line x1="493" y1="140" x2="505" y2="140"/>
+        <line x1="411" y1="106" x2="402" y2="97"/><line x1="479" y1="174" x2="488" y2="183"/>
+        <line x1="479" y1="106" x2="488" y2="97"/>
+      </g>
+    </g>
+    <g class="rocket"><g transform="scale(1.6)">
+      <path class="trail" d="M-5,14 L0,110 L5,14Z" fill="url(#gTrail)"/>
+      <path d="M0,-30 C10,-20 12,-4 10,12 L-10,12 C-12,-4 -10,-20 0,-30Z" fill="#fff" stroke="#232b5c" stroke-width="2.5"/>
+      <circle cx="0" cy="-10" r="5" fill="#36a9e1" stroke="#232b5c" stroke-width="2"/>
+      <path d="M-10,4 L-18,16 L-10,14Z M10,4 L18,16 L10,14Z" fill="#e8352e"/>
+      <path d="M-6,13 Q0,34 6,13Z" fill="#f6b21b"/>
+    </g></g>
+    <g class="botText"><use href="#logo" clip-path="url(#cBot)"/></g>
+  </svg>
   <div class="band" aria-hidden="true"></div>
   <div id="splashMsg">배차 화면을 여는 중</div>
 </div>
@@ -134,10 +265,25 @@ window.addEventListener('message', function (e) {
   if (d && d.type === 'lsapp-pref') { try { localStorage.setItem(PREF_KEY, JSON.stringify({ theme: d.theme, fs: d.fs })); } catch (er) {} }
 });
 var CHECK_TIMEOUT_MS = 5000;
-var SPLASH_MIN_MS = 1200;      // 시작 화면 최소 노출 시간
+var SPLASH_MIN_MS = 2800;      // 시작 화면 최소 노출 시간 (로고 애니메이션 길이, 애니메이션 시작부터 셈)
 var FRAME_MAX_WAIT_MS = 15000; // 배차 화면이 늦게 떠도 이 시간 뒤엔 시작 화면을 걷음
 var NAVY = '#1e2b47';
 var startedAt = Date.now();
+
+// 로고 그림이 준비되면 애니메이션 시작 (못 불러와도 0.8초 뒤 시작)
+(function () {
+  var sp = document.getElementById('splash'), begun = false;
+  function begin() {
+    if (begun) return; begun = true;
+    startedAt = Date.now();
+    sp.classList.add('play');
+  }
+  var im = new Image();
+  im.onload = im.onerror = begin;
+  im.src = 'splash-logo.png';
+  if (im.complete) begin();
+  setTimeout(begin, 800);
+})();
 
 function load(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
 function save(key, v) { try { localStorage.setItem(key, v); } catch (e) {} }
