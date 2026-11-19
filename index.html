@@ -35,12 +35,26 @@
 
   /* ── 시작 화면 ── */
   #splash { display: flex; flex-direction: column; align-items: center; justify-content: center;
-    position: fixed; inset: 0; padding: 24px; background: var(--paper); z-index: 10;
+    position: fixed; inset: 0; padding: 24px; z-index: 10; overflow: hidden;
+    /* 배경: 아주 옅은 하늘색 → 위쪽 노랑, 아래쪽 파랑 빛 (로고 두 색) */
+    background:
+      radial-gradient(120% 70% at 50% 108%, rgba(51,172,221,.20), transparent 60%),
+      radial-gradient(90% 55% at 12% -6%, rgba(222,223,0,.22), transparent 60%),
+      linear-gradient(180deg, #fdfdf6 0%, #f4f9fd 55%, #e9f4fb 100%);
     transition: opacity .35s ease; }
+  #splash > * { position: relative; z-index: 1; }
+  /* 천천히 떠다니는 색 빛 두 개 */
+  #splash::before, #splash::after { content: ""; position: absolute; border-radius: 50%; filter: blur(40px); opacity: .55; z-index: 0; }
+  #splash::before { width: 60vmin; height: 60vmin; left: -18vmin; top: 18%; background: rgba(222,223,0,.35); animation: drift1 7s ease-in-out infinite alternate; }
+  #splash::after { width: 70vmin; height: 70vmin; right: -22vmin; bottom: 6%; background: rgba(51,172,221,.30); animation: drift2 8s ease-in-out infinite alternate; }
+  @keyframes drift1 { to { transform: translate(8vmin, -6vmin) scale(1.1); } }
+  @keyframes drift2 { to { transform: translate(-8vmin, 5vmin) scale(1.08); } }
+  /* 아래쪽 흐린 바람결 선 */
+  #splash svg.wind { position: absolute; left: 0; bottom: 0; width: 100%; height: 30%; z-index: 0; pointer-events: none; opacity: .5; }
   #splash.hide { opacity: 0; pointer-events: none; transform: scale(1.06); transition: opacity .35s ease, transform .35s ease; }
   #splash svg { width: min(78vw, 340px); height: auto; display: block; overflow: visible; }
   .band { width: min(68vw, 300px); height: 6px; border-radius: 3px; margin-top: 30px;
-    background: #eef0f3; overflow: hidden; position: relative; }
+    background: rgba(30,43,71,.08); overflow: hidden; position: relative; }
   .band::after { content: ""; position: absolute; inset: 0; background: var(--band); border-radius: 3px;
     transform-origin: left; transform: scaleX(0); }
   #splash.play .band::after { animation: fill1 3.4s cubic-bezier(.3,.1,.3,1) forwards, fill 1.6s 3s cubic-bezier(.4,0,.2,1) infinite; }
@@ -178,6 +192,10 @@
 
 <!-- 시작 화면 -->
 <div id="splash" role="status" aria-live="polite">
+  <svg class="wind" viewBox="0 0 400 120" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M-10,70 C80,40 160,100 250,62 S380,40 420,58" fill="none" stroke="#33ACDD" stroke-opacity=".35" stroke-width="2"/>
+    <path d="M-10,95 C90,70 170,118 260,88 S380,70 420,84" fill="none" stroke="#DEDF00" stroke-opacity=".45" stroke-width="2"/>
+  </svg>
   <svg class="lg" viewBox="0 0 648 460" role="img" aria-label="용마로지스 × 쿠팡">
     <defs>
       <image id="logo" href="splash-logo.png" x="0" y="0" width="648" height="460"/>
@@ -202,10 +220,16 @@
         <stop offset="1" stop-color="#e8352e" stop-opacity="0"/>
       </linearGradient>
     </defs>
-    <g class="topText"><use href="#logo" clip-path="url(#cTop)"/></g>
+    <g class="topText"><image href="splash-top.png" x="100" y="8" width="440" height="96"/></g>
     <ellipse class="shadow" cx="285" cy="352" rx="70" ry="6" fill="#1d2433"/>
     <!-- 쿠팡 콜라보 나비 (용마 로고가 앉은 뒤 이걸로 바뀜) -->
-    <g class="bf" clip-path="url(#cMark)"><use href="#logo" mask="url(#mNoArrow)"/></g>
+    <g class="bf" stroke-linejoin="round">
+      <!-- 콜라보 나비: 벡터로 다시 그림 (왼쪽 날개 갈라진 곳 이음, 용마 로고 색) -->
+      <path fill="#DEDF00" d="M217,119 Q275,140 300,180 L268,232 L146,257 Q212,200 217,119 Z"/>
+      <path fill="#33ACDD" d="M290,176 L386,145 Q352,182 330,206 Q306,232 284,249 L270,240 L266,228 Z"/>
+      <path fill="#33ACDD" d="M298,265 Q340,250 375,230 L416,265 Q402,296 393,334 Q340,300 298,265 Z"/>
+      <path fill="#1F2E8C" stroke="#1F2E8C" stroke-width="8" d="M296,179 L310,205 L266,225 L250,200 Z"/>
+    </g>
     <!-- 용마로지스 로고: 통째로 날갯짓하며 날아와 앉음 -->
     <g class="flight"><g class="ymo"><g class="flap"><g class="ymw">
       <!-- 용마로지스 나비 (글자 없이 벡터로 다시 그림, 원본 303×195 좌표) -->
@@ -215,7 +239,7 @@
         <path fill="#1F2E8C" stroke="#1F2E8C" stroke-width="9" d="M124,58 L141,80 L97,91 L89,75 Z"/>
       </g>
     </g></g></g></g>
-    <g class="head"><g mask="url(#mReveal)"><use href="#logo" clip-path="url(#cArrow)"/></g></g>
+    <g class="head"><g mask="url(#mReveal)"><image href="splash-arrow.png" x="240" y="90" width="254" height="186"/></g></g>
     <g class="puff" fill="#c9ced8"><circle cx="470" cy="118" r="9"/><circle cx="458" cy="108" r="7"/><circle cx="482" cy="130" r="6"/></g>
     <g class="spark">
       <circle cx="445" cy="140" r="34" fill="none" stroke="#f6c21b" stroke-width="3"/>
@@ -232,7 +256,7 @@
       <path d="M-10,4 L-18,16 L-10,14Z M10,4 L18,16 L10,14Z" fill="#e8352e"/>
       <path d="M-6,13 Q0,34 6,13Z" fill="#f6b21b"/>
     </g></g>
-    <g class="botText"><g transform="translate(324 380) scale(.6) translate(-324 -392)"><use href="#logo" clip-path="url(#cBot)"/></g></g>
+    <g class="botText"><g transform="translate(324 394) scale(.6) translate(-324 -392)"><image href="splash-bot.png" x="10" y="352" width="630" height="96"/></g></g>
   </svg>
   <div class="band" aria-hidden="true"></div>
   <div id="splashMsg">배차 화면을 여는 중</div>
